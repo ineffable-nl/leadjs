@@ -1,0 +1,3 @@
+{ "name" : "LeadJS"
+, "main" : "./lib/Lead.js"
+}

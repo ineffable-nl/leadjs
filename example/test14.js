@@ -1,5 +1,8 @@
-p=console.log
-p('\033[2J')
+// "use strict";
+
+var p=console.log
+// p('\033[2J')
+p((new Array(50)).join("\n"))
 
 p("--")
 p("test14")
@@ -8,7 +11,10 @@ p()
 
 var __modules = { }
  ,    modules = { }
- ,     __main = function( ) { throw "no main function found"; }
+ ,     __main = [ ]
+ ,       Lead = { }
+ ,          L = Lead
+ // ,          λ = L
 
 function __launch() {
   for (var name in __modules) {
@@ -18,6 +24,7 @@ function __launch() {
       ,   m =   t(e)
 
     modules[name] = m
+    Lead[name] = m
 
     // p('MODULAH')
     // p("- __m", __m)
@@ -31,7 +38,7 @@ function __launch() {
 
       if (key==='main') {
         p(" >>> MAIN FOUND <<<")
-        __main = m[key]
+        __main.push(m[key])
       }
     }
 
@@ -41,7 +48,9 @@ function __launch() {
   }
 
   // p(" __main =",__main.call())
-  __main()
+  __main.map(function(f) {
+    f.call(this)
+  }, this)
 }
 
 function module(_name, _exports, _body) {
@@ -93,28 +102,36 @@ module(
 
 module(
   'Data.List'
+, [ "Prelude" ]
 , function() {
-    var head    = function(l) { return l[0] }
-      , last    = function(l) { return l[l.length-1] }
-      , tail    = function(l) { return l.slice(1) }
-      , init    = function(l) { return l.slice(0, -1) }
-      , nil     = function(l) { return length(l)===0 }
-      , length  = function(l) { return l.length }
-      , map     = function(f, l) { return l.map(f) }
+    // Prelude.exports()
+    p("Prelude from List", Lead.Prelude)
+    // with (Lead.Prelude) {
+    eval('var not = Lead.Prelude.not')
+
+    var head    = function(l) { return l[0]                 }
+      , last    = function(l) { return l[l.length-1]        }
+      , tail    = function(l) { return l.slice(1)           }
+      , init    = function(l) { return l.slice(0, -1)       }
+      , nil     = function(l) { return length(l)===0        }
+      , some    = function(l) { return not(nil(l))          }
+      , length  = function(l) { return l.length             }
+      , map     = function(f, l) { return l.map(f)          }
       , reverse = function(l) { return l.slice(0).reverse() }
-      , id      = function(l) { return l }
+      , id      = function(l) { return l                    }
       , main    = function() {
-        a = [1,2,3,4,5]
+        var a = [1,2,3,4,5]
         p('Data.List', a)
-        p('- head',   head(a))
-        p('- last',   last(a))
-        p('- tail',   tail(a))
-        p('- init',   init(a))
-        p('- nil',    nil(a))
-        p('- length', length(a))
-        p('- map',    map(function(x) { return x*2 }, a))
-        p('- reverse',reverse(a))
-        p('- id',     id(a))
+        p('- head   ', head(a))
+        p('- last   ', last(a))
+        p('- tail   ', tail(a))
+        p('- init   ', init(a))
+        p('- nil    ', nil(a))
+        p('- some   ', some(a))
+        p('- length ', length(a))
+        p('- map    ', map(function(x) { return x*2 }, a))
+        p('- reverse', reverse(a))
+        p('- id     ', id(a))
       }
     return { main : main,
         head    : head

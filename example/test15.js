@@ -60,9 +60,41 @@ Lead = (function() {
 
   function $import(module) {
     $debug(arguments)
+    // $_imports.push(arguments)
   }
 
+//   function $scope(map) {
+//     $debug(arguments)
+
+//     $debug(arguments)
+
+//     var $_vars =
+//           [ "var not = function(b) { return !b }"
+//           , "var id  = function(a) { return a  }"
+//           ]
+//       , $_eval = " \
+// ( \
+//   function(__function) { \
+//     var not = function(b) { return !b }; \
+//     var id  = function(a) { return a  }; \
+//     console.log('__function =', __function); \
+//     return function() { \
+//       console.log('called __function', __function, 'with', arguments); \
+//       __function.apply(this, arguments); \
+//     } \
+//   } \
+// )"
+
+//     // $_eval = '(function(f) { return f })'
+
+//     $debug(["eval", $_eval])
+
+//     return eval($_eval)
+//   }
+
   function $scoped(scope, f) {
+    // $debug(arguments)
+
     $_vars = [ ]
     for (var k in scope) {
       $_vars.push("var "+k+" = "+scope[k])
@@ -76,6 +108,8 @@ Lead = (function() {
           , ")"
           ].join("\n")
 
+    // $p('>> scope', scope)
+    // $p('>> eval', $_eval)
     return eval($_eval)
   }
 
@@ -135,6 +169,7 @@ Lead = (function() {
       $debug($_defines, '$_defines =', $_name)
 
       $_imports.map(function(m) {
+        // $p('__IMPORT', m)
         var name       = m.name
           , alias      = m.alias
           , visibility = m.visibility
@@ -156,8 +191,12 @@ Lead = (function() {
         $_define(name, defs[name])
       }, this)
 
+      $debug($_scope)
+
+      // $_scope = $scoped.bind(this, defs)
+
       $_exports.map(function(name) {
-        $debug([name], '$_exports.map', $_name)
+        $debug([name, defs[name]], '$_exports.map', $_name)
         this[name] = $scoped($_scope, defs[name])
 
         if (name === 'main') {
@@ -214,6 +253,7 @@ Lead = (function() {
   })
 
   $main.map(function(main) {
+    $p('call main:', main)
     main()
   })
 

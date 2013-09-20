@@ -212,12 +212,12 @@ Lead = (function() {
       $p("FST TEST (1)",
           typeof fst === 'function' ? fst([1,2,3,4]) : "not defined")
 
-      var start = (new Date)
-      var b = false;
-      for (var i=0; i<10000000; i++) {
-        b = not(b)
-      }
-      $debug(["bench not", (new Date).getTime() - start + " ms"])
+      // var start = (new Date)
+      // var b = false;
+      // for (var i=0; i<1000000; i++) {
+      //   b = not(b)
+      // }
+      // $debug(["bench not", (new Date).getTime() - start + " ms"])
     }
   })
 
@@ -233,18 +233,18 @@ Lead = (function() {
 })()
 exports = Lead
 
-console.log('Lead:\n', Lead)
-console.log("GLOBAL NOT TEST (true)",
-              typeof not === 'function' ? not(false) : "not defined")
-console.log("GLOBAL HIDDEN TEST (42)",
-              typeof hidden === 'function' ? hidden(42) : "not defined")
-console.log("GLOBAL FST TEST (1)",
-              typeof fst === 'function' ? fst([1,2,3,4]) : "not defined")
+// console.log('Lead:\n', Lead)
+// console.log("GLOBAL NOT TEST (true)",
+//               typeof not === 'function' ? not(false) : "not defined")
+// console.log("GLOBAL HIDDEN TEST (42)",
+//               typeof hidden === 'function' ? hidden(42) : "not defined")
+// console.log("GLOBAL FST TEST (1)",
+//               typeof fst === 'function' ? fst([1,2,3,4]) : "not defined")
 
-var not = function(b) { return !b }
-var start = (new Date)
-var b = false;
-for (var i=0; i<10000000; i++) {
-  b = not(b)
-}
-console.log(["bench not", (new Date).getTime() - start + " ms"])
+// var not = function(b) { return !b }
+// var start = (new Date)
+// var b = false;
+// for (var i=0; i<10000000; i++) {
+//   b = not(b)
+// }
+// console.log(["bench not", (new Date).getTime() - start + " ms"])

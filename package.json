@@ -1,3 +1,24 @@
-{ "name" : "lead-js"
-, "main" : "./lib/Lead.js"
+{
+  "name" : "lead-js",
+  "version": "0.0.1-dev",
+  "author": "Niels Heisterkamp <niels@ineffable.nl>",
+  "description": "Functional Javascript",
+  "main" : "build/lib/Lead",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ineffable-nl/lead-js.git"
+  },
+  "keywords": [
+    "cli",
+    "http",
+    "server",
+    "functional",
+    "concurrent",
+    "parallel",
+    "structure"
+  ],
+  "dependencies": {
+    "coffee-script" : ">1.5"
+  },
+  "license": "MIT"
 }

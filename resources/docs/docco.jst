@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - LeadJS - functional Javascript</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="<%= css %>" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    <% if (sources.length > 1) { %>
+    <ul id="jump_to">
+      <li>
+        <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+        <a class="small" href="javascript:void(0);">+</a>
+        <div id="jump_wrapper">
+          <div id="jump_page">
+            <% for (var i=0, l=sources.length; i<l; i++) { %>
+            <% var source = sources[i]; %>
+            <a class="source" href="<%= path.basename(destination(source)) %>">
+              <%= path.basename(source) %>
+            </a>
+            <% } %>
+          </div>
+        </li>
+      </ul>
+      <% } %>
+      <ul class="sections">
+        <li id="title">
+          <div class="annotation">
+            <h1>LeadJS<br/><sup><sup>&mdash; functional Javascript</sup></sup></h1>
+          </div>
+          <div class="highlight">
+            <ul id="toc">
+              <%
+              depth = 1
+              for (var _i=0, _l=sections.length; _i<_l; _i++) {
+                _heading = sections[_i].docsHtml.match(/^\s*<(h\d)>/);
+                level = _heading ? _heading[1][1] : null;
+                if (level!=null) {
+                  for (var k=depth; k<level; k++) {
+                    %><ul><%
+                  }
+                  for (var k=depth; k>level; k--) {
+                    %></ul><%
+                  }
+
+                  title = sections[_i].docsHtml.match(/^\s*<(h\d)>([^<]*)/)[2]
+                  if (title) {
+                    %><li>
+                    <a href="#section-<%= _i+1 %>"><%= title %></a>
+                  </li><%
+                }
+                depth = level
+              }
+            }
+            %>
+          </ul>
+        </div>
+      </li>
+      <% for (var i=0, l=sections.length; i<l; i++) { %>
+      <% var section = sections[i]; %>
+      <li id="section-<%= i + 1 %>">
+        <%
+        heading = section.docsHtml.match(/^\s*<(h\d)>/);
+        level = heading ? heading[1][1] : null;
+        %>
+        <div class="annotation">
+          <div class="pilwrap <%= heading ? 'for-' + heading[1] : '' %>">
+            <a class="pilcrow" href="#section-<%= i + 1 %>">&#182;</a>
+          </div>
+          <%= section.docsHtml %>
+        </div>
+        <div class="content">
+          <%= section.codeHtml %>
+        </div>
+      </li>
+      <% } %>
+    </ul>
+  </div>
+</body>
+</html>

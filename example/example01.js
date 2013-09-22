@@ -1,25 +1,29 @@
-var ld=require('../lib/Lead.js');
+console.log('Lead', Lead)
 
-console.log('Lead ld', ld)
-for (var m in ld.modules) {
-  console.log('module loaded:', m);
+for (var m in Lead.modules) {
+  console.log('module loaded:', m)
 }
 
-// print('ld.module', ld.module);
+var m = Lead
+  .module('example01', [])
+  .import('Prelude')
+  .where(function() {
+    function example() {
+      console.log('example01 example')
+    }
 
-// ld.module('example01', [])
-//   .where(function() {
-//     importing('App.Test');
+    function main() {
+      console.log("main")
+      console.log("testFunction", testFunction, testFunction())
 
-//     function example() {
-//       console.log('example01 example');
-//     };
+      arr = ['a', 'b', 'c']
+      console.log(head(arr))
+    }
+  })
 
-//     function main() {
-//       console.log("main");
-//       console.log("testFunction", testFunction, testFunction());
+console.log('module', m)
 
-//       arr = ['a', 'b', 'c'];
-//       console.log(head(arr));
-//     };
-//   });
+for (var m in Lead.modules) {
+  console.log('module loaded:', m)
+}
+

@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lead - LeadJS - functional Javascript</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul id="jump_to">
+      <li>
+        <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+        <a class="small" href="javascript:void(0);">+</a>
+        <div id="jump_wrapper">
+          <div id="jump_page">
+            
+            
+            <a class="source" href="bench-01-eval.coffee.html">
+              bench-01-eval.coffee.md
+            </a>
+            
+            
+            <a class="source" href="bench.coffee.html">
+              bench.coffee.md
+            </a>
+            
+            
+            <a class="source" href="Browser.coffee.html">
+              Browser.coffee.md
+            </a>
+            
+            
+            <a class="source" href="Lead.coffee.html">
+              Lead.coffee.md
+            </a>
+            
+            
+            <a class="source" href="List.coffee.html">
+              List.coffee.md
+            </a>
+            
+            
+            <a class="source" href="Job.coffee.html">
+              Job.coffee.md
+            </a>
+            
+            
+            <a class="source" href="Niels.coffee.html">
+              Niels.coffee.md
+            </a>
+            
+            
+            <a class="source" href="Prelude.coffee.html">
+              Prelude.coffee.md
+            </a>
+            
+            
+            <a class="source" href="test-Data.List.coffee.html">
+              test-Data.List.coffee.md
+            </a>
+            
+            
+            <a class="source" href="test-01-Lead.coffee.html">
+              test-01-Lead.coffee.md
+            </a>
+            
+            
+            <a class="source" href="test-02-Prelude.coffee.html">
+              test-02-Prelude.coffee.md
+            </a>
+            
+            
+            <a class="source" href="test-03-Job.coffee.html">
+              test-03-Job.coffee.md
+            </a>
+            
+          </div>
+        </li>
+      </ul>
+      
+      <ul class="sections">
+        <li id="title">
+          <div class="annotation">
+            <h1>LeadJS<br/><sup><sup>&mdash; functional Javascript</sup></sup></h1>
+          </div>
+          <div class="highlight">
+            <ul id="toc">
+              <li>
+                    <a href="#section-1">Lead</a>
+                  </li><ul><li>
+                    <a href="#section-2">Prelude</a>
+                  </li><ul><li>
+                    <a href="#section-3">Standard types, classes and related functions</a>
+                  </li><ul><li>
+                    <a href="#section-4">Basic data types</a>
+                  </li></ul><li>
+                    <a href="#section-5">List operations</a>
+                  </li><ul><li>
+                    <a href="#section-6">Reducing lists (folds)</a>
+                  </li></ul></ul><li>
+                    <a href="#section-7">(private) evalVar</a>
+                  </li><li>
+                    <a href="#section-8">(private) scoped</a>
+                  </li><li>
+                    <a href="#section-9">(public) version</a>
+                  </li><li>
+                    <a href="#section-10">(public) start</a>
+                  </li><li>
+                    <a href="#section-11">(public) module &lt; name &gt; [, exports... ]</a>
+                  </li><ul><li>
+                    <a href="#section-12">(private) [ $define &lt; name &gt;, &lt; definition &gt; ]</a>
+                  </li><li>
+                    <a href="#section-13">(public) [ .exports &lt; functions... &gt; ]</a>
+                  </li><li>
+                    <a href="#section-14">(public) [ .imports &lt;module&gt; [alias] ]</a>
+                  </li><li>
+                    <a href="#section-15">(public) .where &lt;definition&gt;</a>
+                  </li>
+          </ul>
+        </div>
+      </li>
+      
+      
+      <li id="section-1">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h1">
+            <a class="pilcrow" href="#section-1">&#182;</a>
+          </div>
+          <h1>Lead</h1>
+<p>We start with a global entry point into the library. This is where all the
+magic happens, so your global namespace won&#39;t get too polluted.</p>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>console.time(<span class="string">"Lead"</span>)
+
+Lead = <span class="keyword">do</span> -&gt;
+  modules = []</pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-2">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h2">
+            <a class="pilcrow" href="#section-2">&#182;</a>
+          </div>
+          <h2>Prelude</h2>
+<p>We want to use some functions in every Lead module we are creating, but also
+in the Lead library itself.</p>
+<p>log     = console.log.bind   @, &quot;&gt;&quot;</p>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>  <span class="function"><span class="title">str_repeat</span></span> = (s, n) -&gt;
+    (<span class="keyword">new</span> Array (n+<span class="number">1</span>)).join s
+
+  <span class="function"><span class="title">log_</span></span> = (prefix, args...) -&gt;
+    console.log.apply(@, 
+      [str_repeat(<span class="string">"  "</span>, groups.length), prefix].concat args)
+  <span class="function"><span class="title">error_</span></span> = (prefix, args...) -&gt;
+    console.error.apply(@, 
+      [str_repeat(<span class="string">"  "</span>, groups.length), prefix].concat args)
+
+  <span class="function"><span class="title">log</span></span>     = (args...) -&gt; log_.apply   @, [<span class="string">" "</span>].concat(args)
+  <span class="function"><span class="title">debug</span></span>   = (args...) -&gt; log_.apply   @, [<span class="string">"|"</span>].concat(args)
+  <span class="function"><span class="title">info</span></span>    = (args...) -&gt; log_.apply   @, [<span class="string">"#"</span>].concat(args)
+  <span class="function"><span class="title">warn</span></span>    = (args...) -&gt; error_.apply @, [<span class="string">"$"</span>].concat(args)
+  <span class="function"><span class="title">error</span></span>   = (args...) -&gt; error_.apply @, [<span class="string">"!"</span>].concat(args)
+
+  groups  = []
+  <span class="function"><span class="title">group</span></span>   = (s, f) -&gt;
+    log <span class="string">"<span class="subst">#{s}</span>"</span>
+    groups.push s
+    f()
+    groups.pop()</pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-3">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h3">
+            <a class="pilcrow" href="#section-3">&#182;</a>
+          </div>
+          <h3>Standard types, classes and related functions</h3>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>  <span class="function"><span class="title">TODO</span></span>    = (s) -&gt; <span class="keyword">throw</span> <span class="keyword">new</span> Error <span class="string">"TODO <span class="subst">#{s}</span>"</span>
+
+  <span class="function"><span class="title">data</span></span>    = (d) -&gt; d
+  <span class="function"><span class="title">newtype</span></span> = -&gt; TODO <span class="string">"newtype"</span>
+  <span class="function"><span class="title">type</span></span>    = -&gt; TODO <span class="string">"type"</span></pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-4">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h4">
+            <a class="pilcrow" href="#section-4">&#182;</a>
+          </div>
+          <h4>Basic data types</h4>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>  False   = <span class="literal">false</span>
+  True    = <span class="literal">true</span>
+  Bool    = data (a) -&gt; a <span class="keyword">is</span> True <span class="keyword">or</span> a <span class="keyword">is</span> False
+
+  otherwise = <span class="literal">true</span></pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-5">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h3">
+            <a class="pilcrow" href="#section-5">&#182;</a>
+          </div>
+          <h3>List operations</h3>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>  <span class="function"><span class="title">head</span></span>    = (l) -&gt; l.slice  <span class="number">0</span>,  <span class="number">1</span>
+  <span class="function"><span class="title">last</span></span>    = (l) -&gt; l.slice -<span class="number">1</span>
+  <span class="function"><span class="title">tail</span></span>    = (l) -&gt; l.slice  <span class="number">1</span>
+  <span class="function"><span class="title">init</span></span>    = (l) -&gt; l.slice  <span class="number">0</span>, -<span class="number">1</span>
+  <span class="function"><span class="title">nil</span></span>     = (l) -&gt; (length l) <span class="keyword">is</span> <span class="number">0</span>
+  <span class="function"><span class="title">length</span></span>  = (l) -&gt; l.length</pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-6">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h4">
+            <a class="pilcrow" href="#section-6">&#182;</a>
+          </div>
+          <h4>Reducing lists (folds)</h4>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>  <span class="function"><span class="title">foldr</span></span> = (l) -&gt; TODO <span class="string">"foldr"</span></pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-7">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h2">
+            <a class="pilcrow" href="#section-7">&#182;</a>
+          </div>
+          <h2>(private) evalVar</h2>
+<p>Make a variable able to be evalled.</p>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>  <span class="function"><span class="title">evalVar</span></span> = (v) -&gt;
+    <span class="keyword">if</span> Array.isArray v
+      v = <span class="string">"[<span class="subst">#{v}</span>]"</span>
+    <span class="keyword">else</span> <span class="keyword">if</span> <span class="keyword">typeof</span> v <span class="keyword">is</span> <span class="string">'object'</span>
+      v = <span class="string">"{<span class="subst">#{v}</span>}"</span>
+    <span class="keyword">else</span>
+      v</pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-8">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h2">
+            <a class="pilcrow" href="#section-8">&#182;</a>
+          </div>
+          <h2>(private) scoped</h2>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>  <span class="function"><span class="title">scoped</span></span> = (scope, v) -&gt;
+    $eval = 
+      <span class="string">"""
+      ((function() {
+        <span class="subst">#{("<span class="reserved">var</span> #{k}</span> = <span class="subst">#{evalVar scope[k]}</span>" for k of scope).join("\n  ")}
+        return ( <span class="subst">#{evalVar v}</span> )
+      })())
+      """</span>
+
+    <span class="keyword">try</span>
+      eval $eval
+    <span class="keyword">catch</span> e
+      error <span class="string">"&gt;&gt;&gt;&gt;&gt;&gt; SCOPED ERROR"</span>
+      error <span class="string">"scope:"</span>, scope
+      error <span class="string">"###"</span>
+      error <span class="string">"function:"</span>, v
+      error <span class="string">"###"</span>
+      error <span class="string">"evalled:"</span>, $eval
+      error <span class="string">"###"</span>
+      error <span class="string">"error:"</span>, e
+      error <span class="string">"&gt;&gt;&gt;&gt;&gt;&gt;&gt;"</span>
+      <span class="keyword">throw</span> e</pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-9">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h2">
+            <a class="pilcrow" href="#section-9">&#182;</a>
+          </div>
+          <h2>(public) version</h2>
+<p>We want to be able to identify ourselves in a logical and comparable way. To
+achieve this we adhere to <a href="http://semver.org">Semantic Versioning 2.0.0</a>.</p>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>  version : 
+    major : <span class="number">0</span>
+    minor : <span class="number">0</span> 
+    patch : <span class="number">1</span> 
+    build : <span class="string">"dev"</span></pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-10">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h2">
+            <a class="pilcrow" href="#section-10">&#182;</a>
+          </div>
+          <h2>(public) start</h2>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>  start : <span class="keyword">new</span> Date().getTime()</pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-11">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h2">
+            <a class="pilcrow" href="#section-11">&#182;</a>
+          </div>
+          <h2>(public) module &lt; name &gt; [, exports... ]</h2>
+<p>This is where the magic happens baby. Base module function. Gives access to
+import and where functions.</p>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>  module : (name, exports...) -&gt;
+    <span class="keyword">if</span> modules[$name]?
+      <span class="keyword">throw</span> <span class="keyword">new</span> error <span class="string">"module <span class="subst">#{$name}</span> already defined"</span>
+
+    $name    = name
+    $exports = (e <span class="keyword">for</span> e <span class="keyword">in</span> exports)
+    $imports = (<span class="keyword">if</span> name <span class="keyword">is</span> <span class="string">"Prelude"</span> <span class="keyword">then</span> [ ] <span class="keyword">else</span> 
+                [ name: <span class="string">"Prelude"</span>, alias: <span class="literal">null</span> ])
+    $defines = [ ]
+    $scope   = { }</pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-12">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h3">
+            <a class="pilcrow" href="#section-12">&#182;</a>
+          </div>
+          <h3>(private) [ $define &lt; name &gt;, &lt; definition &gt; ]</h3>
+<p>Allows definition of functions and variables in modules scope.</p>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>    <span class="function"><span class="title">$define</span></span> = (name, definition) -&gt;
+      <span class="keyword">if</span> $scope[name]? 
+        <span class="keyword">throw</span> <span class="string">"cannot redeclare "</span> + name
+
+      $scope[name] = definition</pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-13">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h3">
+            <a class="pilcrow" href="#section-13">&#182;</a>
+          </div>
+          <h3>(public) [ .exports &lt; functions... &gt; ]</h3>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>    exports : (functions...) -&gt;
+      <span class="keyword">if</span> $exports.length &gt; <span class="number">0</span>
+        <span class="keyword">throw</span> Error <span class="string">"<span class="subst">#{$name}</span> already has exports defined"</span>
+
+      $exports = (f <span class="keyword">for</span> f <span class="keyword">in</span> functions)
+
+      @</pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-14">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h3">
+            <a class="pilcrow" href="#section-14">&#182;</a>
+          </div>
+          <h3>(public) [ .imports &lt;module&gt; [alias] ]</h3>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>    imports : (module, alias) -&gt;
+      $imports.push
+        name: module
+        alias: alias
+
+      @</pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-15">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h3">
+            <a class="pilcrow" href="#section-15">&#182;</a>
+          </div>
+          <h3>(public) .where &lt;definition&gt;</h3>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>    where : (definitions) -&gt;
+      <span class="keyword">if</span> modules[$name]?
+        <span class="keyword">throw</span> <span class="keyword">new</span> error <span class="string">"module <span class="subst">#{$name}</span> already defined"</span>
+
+      <span class="keyword">delete</span> <span class="property">@exports</span>
+      <span class="keyword">delete</span> <span class="property">@imports</span>
+      <span class="keyword">delete</span> <span class="property">@where</span>
+
+      $defines = (v <span class="keyword">for</span> v, k <span class="keyword">of</span> definitions)
+
+      <span class="keyword">for</span> k, m <span class="keyword">of</span> $imports
+        <span class="keyword">if</span> <span class="keyword">not</span> modules[m.name]?
+          file = ((m.name).split <span class="string">"."</span>).join <span class="string">"/"</span>
+          path = <span class="string">"../modules/<span class="subst">#{file}</span>"</span>
+
+          <span class="keyword">try</span>
+            require path
+          <span class="keyword">catch</span> e
+            error <span class="string">"Could not find module <span class="subst">#{m.name}</span>"</span>
+            <span class="keyword">throw</span> e
+
+          <span class="keyword">if</span> <span class="keyword">not</span> modules[m.name]?
+            <span class="keyword">throw</span> <span class="keyword">new</span> Error <span class="string">"module <span class="subst">#{m.name}</span> not loaded"</span>
+
+        fs = (n <span class="keyword">for</span> n, f <span class="keyword">of</span> modules[m.name])
+        <span class="keyword">if</span> alias? $define alias, <span class="string">"modules."</span> + m.name
+        <span class="keyword">else</span>      $define f,     <span class="string">"modules['<span class="subst">#{m.name}</span>'].<span class="subst">#{f}</span>"</span> <span class="keyword">for</span> f <span class="keyword">in</span> fs
+
+      $defines.map (n) -&gt; $define n, definitions[n]
+
+      <span class="keyword">for</span> name <span class="keyword">in</span> $exports
+        debug <span class="string">"Defining <span class="subst">#{$name}</span>.<span class="subst">#{name}</span>"</span>
+        @[name] = scoped($scope, definitions[name])
+        <span class="keyword">if</span> name <span class="keyword">is</span> <span class="string">"main"</span>
+          info <span class="string">"main found"</span>
+          $main = @[name]
+
+      <span class="keyword">if</span> $main?
+        info <span class="string">"calling main of <span class="subst">#{$name}</span>"</span>
+        $main.call @
+
+      modules[$name] = @
+
+module?.exports = Lead
+window?.Lead = Lead
+console.timeEnd(<span class="string">"Lead"</span>)</pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-16">
+        
+        <div class="annotation">
+          <div class="pilwrap ">
+            <a class="pilcrow" href="#section-16">&#182;</a>
+          </div>
+          <p>console.log &quot;Loaded Lead in #{(new Date).getTime() - Lead.start} ms&quot;</p>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre></pre></div>
+        </div>
+      </li>
+      
+    </ul>
+  </div>
+</body>
+</html>

@@ -1,7 +1,5 @@
 # Prelude
 Prelude is imported in every module.
-
-    console.log "# Loading Prelude"
     
     require('../lib/Lead')
     .module("Prelude")
@@ -12,17 +10,18 @@ Prelude is imported in every module.
     .exports(
         "not"
         "fst"
+        "snd"
     )
 
   
 # Where
 
     .where
+      False: false
+      True: true
+      
+      otherwise: true
+      
       not: (b) -> !b
       fst: (l) -> l[0]
       snd: (l) -> l[1]
-
-
-# D-bug
-
-    console.log "# Prelude loaded"

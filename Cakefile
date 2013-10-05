@@ -62,9 +62,7 @@ build = (watch, callback) ->
   launch 'coffee', options, (status, stdout, stderr) ->
     if status is 0
       log "[V] Done building LeadJS\n", lightGreen
-      
       do callback if callback?
-        
     else
       log "[X] Building LeadJS failed\n", lightRed
       log stdout, lightGreen
@@ -73,11 +71,18 @@ build = (watch, callback) ->
 
 tests = (callback) ->
   log "### Running tests", green
-  $files = [ ]
+  app = spawn "mocha", [
+    "--compilers", "coffee:coffee-script"
+    "--reporter", "spec"
+    "-#{if color then 'c' else 'C'}"
+    "src/tests/*"
+  ]
   
-  walk "src/tests", (err, files) ->
-    runScriptsSynchronous files, callback
-
+  app.stdout.pipe process.stdout
+  app.stderr.pipe process.stderr
+  
+  app.on "exit", ->
+    callback()
 
 bench = (callback) ->
   log "### Running benchmarks", green
@@ -211,7 +216,7 @@ parseScriptResult = (err, stdout, stderr, cmd, options) ->
       
     err is 0
   else
-    log "[*] TEST SKIPPED #{options?[0]}", bold
+    log "[*] SKIPPED #{options?[0]}", bold
     false
 
 
@@ -236,7 +241,7 @@ runScriptsSynchronous = (files, callback) ->
 
 
 launch = (cmd, options=[], callback) ->
-  # log "### Executing: #{cmd} #{options.join(' ')}", bold
+  log "### Executing: #{cmd} #{options.join(' ')}", bold
   # log "```"
   
   stdout = ""
@@ -254,6 +259,4 @@ launch = (cmd, options=[], callback) ->
     # log "```"
     somethingFailed = true if err isnt 0
     callback err, stdout, stderr, cmd, options
-    
-
 

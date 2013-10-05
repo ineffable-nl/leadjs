@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Browser - LeadJS - functional Javascript</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul id="jump_to">
+      <li>
+        <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+        <a class="small" href="javascript:void(0);">+</a>
+        <div id="jump_wrapper">
+          <div id="jump_page">
+            
+            
+            <a class="source" href="bench-01-eval.coffee.html">
+              bench-01-eval.coffee.md
+            </a>
+            
+            
+            <a class="source" href="bench.coffee.html">
+              bench.coffee.md
+            </a>
+            
+            
+            <a class="source" href="Browser.coffee.html">
+              Browser.coffee.md
+            </a>
+            
+            
+            <a class="source" href="Lead.coffee.html">
+              Lead.coffee.md
+            </a>
+            
+            
+            <a class="source" href="List.coffee.html">
+              List.coffee.md
+            </a>
+            
+            
+            <a class="source" href="Job.coffee.html">
+              Job.coffee.md
+            </a>
+            
+            
+            <a class="source" href="Niels.coffee.html">
+              Niels.coffee.md
+            </a>
+            
+            
+            <a class="source" href="Prelude.coffee.html">
+              Prelude.coffee.md
+            </a>
+            
+            
+            <a class="source" href="test-Data.List.coffee.html">
+              test-Data.List.coffee.md
+            </a>
+            
+            
+            <a class="source" href="test-01-Lead.coffee.html">
+              test-01-Lead.coffee.md
+            </a>
+            
+            
+            <a class="source" href="test-02-Prelude.coffee.html">
+              test-02-Prelude.coffee.md
+            </a>
+            
+            
+            <a class="source" href="test-03-Job.coffee.html">
+              test-03-Job.coffee.md
+            </a>
+            
+          </div>
+        </li>
+      </ul>
+      
+      <ul class="sections">
+        <li id="title">
+          <div class="annotation">
+            <h1>LeadJS<br/><sup><sup>&mdash; functional Javascript</sup></sup></h1>
+          </div>
+          <div class="highlight">
+            <ul id="toc">
+              <li>
+                    <a href="#section-1">Browser</a>
+                  </li>
+          </ul>
+        </div>
+      </li>
+      
+      
+      <li id="section-1">
+        
+        <div class="annotation">
+          <div class="pilwrap for-h1">
+            <a class="pilcrow" href="#section-1">&#182;</a>
+          </div>
+          <h1>Browser</h1>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre></pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-2">
+        
+        <div class="annotation">
+          <div class="pilwrap ">
+            <a class="pilcrow" href="#section-2">&#182;</a>
+          </div>
+          
+        </div>
+        <div class="content">
+          <div class='highlight'><pre><span class="keyword">if</span> <span class="keyword">not</span> require?
+  <span class="function"><span class="title">require</span></span> = (_module) -&gt;
+    console.log(<span class="string">'require'</span>, _module);</pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-3">
+        
+        <div class="annotation">
+          <div class="pilwrap ">
+            <a class="pilcrow" href="#section-3">&#182;</a>
+          </div>
+          <p>Get some kind of XMLHttpRequest</p>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>    xhrObj = createXMLHTTPObject();</pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-4">
+        
+        <div class="annotation">
+          <div class="pilwrap ">
+            <a class="pilcrow" href="#section-4">&#182;</a>
+          </div>
+          <p>Open and send a synchronous request</p>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>    xhrObj.open(<span class="string">'GET'</span>, _module+<span class="string">'.js'</span>, <span class="literal">false</span>);
+    xhrObj.send(<span class="string">''</span>);</pre></div>
+        </div>
+      </li>
+      
+      
+      <li id="section-5">
+        
+        <div class="annotation">
+          <div class="pilwrap ">
+            <a class="pilcrow" href="#section-5">&#182;</a>
+          </div>
+          <p>Add the returned content to a newly created script tag</p>
+
+        </div>
+        <div class="content">
+          <div class='highlight'><pre>    se = document.createElement(<span class="string">'script'</span>);
+    se.type = <span class="string">"text/javascript"</span>;
+    se.text = xhrObj.responseText;
+    document.getElementsByTagName(<span class="string">'head'</span>)[<span class="number">0</span>].appendChild(se);</pre></div>
+        </div>
+      </li>
+      
+    </ul>
+  </div>
+</body>
+</html>

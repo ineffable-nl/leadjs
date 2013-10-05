@@ -4,37 +4,104 @@ magic happens, so your global namespace won't get too polluted.
 
     Lead = do ->
       modules = []
-      error   = console.log
-      #debug   = -> false
-      debug   = console.log
+      
 
+## Prelude
+We want to use some functions in every Lead module we are creating, but also
+in the Lead library itself.
 
-## (private) scopedFunction &lt;scope&gt; &lt;func&gt; 
-
-      scopedFunction = (scope, v) ->
-        v = "[#{v}]" if Array.isArray v
-        v = "{#{v}}" if typeof v is 'object'
+      #log     = console.log.bind   @, ">"
+      str_repeat = (s, n) ->
+        (new Array (n+1)).join s
+      
+      log_ = (prefix, args...) ->
+        console.log.apply(@, 
+          [str_repeat("  ", groups.length), prefix].concat args)
+      error_ = (prefix, args...) ->
+        console.error.apply(@, 
+          [str_repeat("  ", groups.length), prefix].concat args)
         
-        """
-        ((function() {
-          #{("var #{k} = #{scope[k]}" for k of scope).join("\n  ")}
-          return ( #{v} )
-        })())
-        """
+      log     = (args...) -> log_.apply   @, [":"].concat(args)
+      debug   = (args...) -> log_.apply   @, ["|"].concat(args)
+      info    = (args...) -> log_.apply   @, ["#"].concat(args)
+      warn    = (args...) -> error_.apply @, ["$"].concat(args)
+      error   = (args...) -> error_.apply @, ["!"].concat(args)
+      
+      groups  = []
+      group   = (s, f) ->
+        log "#{s}"
+        groups.push s
+        f()
+        groups.pop()
+        
+        
+### Standard types, classes and related functions
 
+      TODO    = (s) -> throw new Error "TODO #{s}"
+      
+      data    = (d) -> d
+      newtype = -> TODO "newtype"
+      type    = -> TODO "type"
+
+
+#### Basic data types
+
+      False   = false
+      True    = true
+      Bool    = data (a) -> a is True or a is False
+      
+      otherwise = true
+      
+      
+
+### List operations
+
+      
+      head    = (l) -> l[0]
+      last    = (l) -> l[(length l) - 1]
+      tail    = (l) -> l.slice  1     unless nil l
+      init    = (l) -> l.slice  0, -1 unless nil l
+      nil     = (l) -> (length l) is 0
+      length  = (l) -> l.length
+
+
+#### Reducing lists (folds)
+
+      foldr = (l) -> TODO "foldr"
+
+
+## (private) evalVar
+Make a variable able to be evalled.
+
+      evalVar = (v) ->
+        if Array.isArray v
+          v = "[#{v}]"
+        else if typeof v is 'object'
+          v = "{#{v}}"
+        else
+          v
+      
 
 ## (private) scoped
 
-      scoped = (scope, f) ->
+      scoped = (scope, v) ->
+        $eval = 
+          """
+          ((function() {
+            #{("var #{k} = #{evalVar scope[k]}" for k of scope).join("\n  ")}
+            return ( #{evalVar v} )
+          })())
+          """
+        
         try
-          eval scopedFunction(scope, f)
+          eval $eval
         catch e
           error ">>>>>> SCOPED ERROR"
           error "scope:", scope
           error "###"
-          error "function:", f
+          error "function:", v
           error "###"
-          error "evalled:", scopedFunction(scope, f)
+          error "evalled:", $eval
           error "###"
           error "error:", e
           error ">>>>>>>"
@@ -57,25 +124,26 @@ achieve this we adhere to [Semantic Versioning 2.0.0](http://semver.org).
       start : new Date().getTime()
 
 
-## (public) module &lt;name&gt; [exports...]
+## (public) module &lt; name &gt; [, exports... ]
 This is where the magic happens baby. Base module function. Gives access to
 import and where functions.
 
       module : (name, exports...) ->
-        debug "Lead::module", name, exports
-        
         if modules[$name]?
-          throw new error "module #{$name} already defined"
+          error "module #{$name} already defined"
         
         $name    = name
         $exports = (e for e in exports)
-        $imports = (if name is "Prelude" then [ ] else 
-                    [ name: "Prelude", alias: null ])
+
+$imports = (if name is "Prelude" then [ ] else 
+[ name: "Prelude", alias: null ])
+
+        $imports = [ ]
         $defines = [ ]
         $scope   = { }
 
 
-### (private) [ $define &lt;name&gt; &lt;definition&gt; ]
+### (private) [ $define &lt; name &gt;, &lt; definition &gt; ]
 Allows definition of functions and variables in modules scope.
 
         $define = (name, definition) ->
@@ -85,11 +153,9 @@ Allows definition of functions and variables in modules scope.
           $scope[name] = definition
 
 
-### (public) [ .exports &lt;functions...&gt; ] 
+### (public) [ .exports &lt; functions... &gt; ] 
 
         exports : (functions...) ->
-          debug "#{$name}.exports", functions
-          
           if $exports.length > 0
             throw Error "#{$name} already has exports defined"
           
@@ -101,20 +167,15 @@ Allows definition of functions and variables in modules scope.
 ### (public) [ .imports &lt;module&gt; [alias] ]
 
         imports : (module, alias) ->
-          debug "#{$name}.imports", module, alias
-          
           $imports.push
             name: module
             alias: alias
-            
+          
           @
-
 
 ### (public) .where &lt;definition&gt;
 
         where : (definitions) ->
-          debug "#{$name}.where", definitions
-          
           if modules[$name]?
             throw new error "module #{$name} already defined"
           
@@ -124,14 +185,9 @@ Allows definition of functions and variables in modules scope.
           
           $defines = (v for v, k of definitions)
           
-          debug "$imports", $imports
-          
           for k, m of $imports
-            debug "###### Import #{m.name}"
-            
             if not modules[m.name]?
               file = ((m.name).split ".").join "/"
-              debug "file", file, "from", m.name
               path = "../modules/#{file}"
               
               try
@@ -149,19 +205,17 @@ Allows definition of functions and variables in modules scope.
           
           $defines.map (n) -> $define n, definitions[n]
           
-          for name, definition of definitions
-            this[name] = scoped($scope, definition)
-            $main = this[name] if name is "main"
+          for name in $exports
+            @[name] = scoped($scope, definitions[name])
+            if name is "main"
+              $main = @[name]
           
           if $main?
-            debug ">>> Found main function in #{$name}.. running now"
-            do $main
-            debug "<<<"
-          else
-            debug "Main function not found in #{$name}"
-            
+            info "calling main of #{$name}"
+            $main.call @
+                    
           modules[$name] = @
-          @
     
     module?.exports = Lead
     window?.Lead = Lead
+    global?.Lead = Lead
